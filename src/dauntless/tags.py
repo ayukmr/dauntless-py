@@ -1,6 +1,9 @@
 import numpy as np
 from collections import defaultdict
 
+SEG_THRESH = 1.5
+PARA_THRESH = 0.5
+
 def tags(edges, corners, ax=None):
     shapes = find_shapes(edges, corners)
     quads = filter_quads(shapes)
@@ -130,7 +133,7 @@ def on_seg(p, a, b):
 
     norm = np.hypot(ab[0], ab[1])
 
-    if np.cross(ab, ap) > 1.5 * norm:
+    if np.cross(ab, ap) > SEG_THRESH * norm:
         return False
 
     return np.dot(ap, ab) <= np.dot(ab, ab)
@@ -154,7 +157,7 @@ def filter_paras(quads):
         h_diff = np.abs(hd0 / hd1)
         v_diff = np.abs(vd0 / vd1)
 
-        if np.abs(h_diff - 1) + np.abs(v_diff - 1) < 0.5:
+        if np.abs(h_diff - 1) + np.abs(v_diff - 1) < PARA_THRESH:
             res.append(pts)
 
     return res

@@ -2,6 +2,10 @@ import numpy as np
 
 from . import oper, post
 
+HARRIS_K = 0.01
+HARRIS_THRESH = 0.2
+HARRIS_NEARBY = 3
+
 def canny(img, ax=None):
     blur = oper.blur(img)
     x, y = oper.sobel(blur)
@@ -10,7 +14,7 @@ def canny(img, ax=None):
     orient = np.atan2(y, x)
 
     supp = post.nms(mag, orient)
-    mask = post.hysteresis(supp, 0.05, 0.2)
+    mask = post.hysteresis(supp)
 
     if ax:
         ax.clear()
@@ -32,16 +36,16 @@ def harris(img, ax=None):
 
     det = sxx * syy - sxy**2
     trace = sxx + syy
-    resp = det - 0.01 * trace**2
+    resp = det - HARRIS_K * trace**2
 
-    filtered = resp > 0.2
+    filtered = resp > HARRIS_THRESH
     ys, xs = np.where(filtered)
 
     mask = np.zeros_like(resp, dtype=bool)
 
     for y, x in zip(ys, xs):
-        x0, x1 = max(0, x - 3), x + 3
-        y0, y1 = max(0, y - 3), y + 3
+        x0, x1 = max(0, x - HARRIS_NEARBY), x + HARRIS_NEARBY
+        y0, y1 = max(0, y - HARRIS_NEARBY), y + HARRIS_NEARBY
 
         if resp[y, x] == resp[y0:y1 + 1, x0:x1 + 1].max():
             mask[y, x] = True

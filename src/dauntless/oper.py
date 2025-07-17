@@ -1,5 +1,7 @@
 import numpy as np
 
+BLUR_R = 0.15
+
 SOBEL_X = np.array([
     [-1, 0, 1],
     [-2, 0, 2],
@@ -16,7 +18,7 @@ def blur(img):
     y, x = np.ogrid[:h, :w]
 
     dist = np.hypot(x - w/2, y - h/2)
-    sigma = 0.15 * min(h, w)
+    sigma = BLUR_R * min(h, w)
 
     freq = to_freq(img)
     mask = np.exp(-(dist**2) / (2 * sigma**2))

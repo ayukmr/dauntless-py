@@ -1,5 +1,8 @@
 import numpy as np
 
+HYST_LOW_T = 0.05
+HYST_HIGH_T = 0.2
+
 def nms(mag, orient):
     res = np.zeros_like(mag)
 
@@ -28,11 +31,11 @@ def nms(mag, orient):
 
     return res
 
-def hysteresis(edges, low_t, high_t):
+def hysteresis(edges):
     edges /= np.max(edges)
 
-    strong = edges > high_t
-    weak = (edges > low_t) & (edges < high_t)
+    strong = edges > HYST_HIGH_T
+    weak = (edges > HYST_LOW_T) & (edges <= HYST_HIGH_T)
 
     res = strong.copy()
 
