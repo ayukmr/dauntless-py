@@ -32,19 +32,9 @@ def process(data, axs=None):
         br = max(pts, key=lambda p:  p[0] + p[1])
 
         corners = (tl, tr, bl, br)
-
         id = decode.decode(img, corners)
 
-        y0 = bl[1] - tl[1]
-        y1 = br[1] - tr[1]
-
-        if y0 != 0 and y1 != 0:
-            ratio = (y0 / y1) - 1
-            deg = int(ratio / (np.sqrt(2) - 1) * 90)
-        else:
-            deg = None
-
-        res.append((id, deg, corners))
+        res.append((id, corners))
 
     if axs is not None:
         display_tags(axs[1][1], light, res)
@@ -56,7 +46,7 @@ def display_tags(ax, l, tags):
     ax.imshow(l, cmap='gray')
     ax.axis('off')
 
-    for id, deg, (tl, tr, bl, br) in tags:
+    for id, (tl, tr, bl, br) in tags:
         corners = [tl, tr, br, bl, tl]
 
         x, y = zip(*corners)
@@ -67,11 +57,9 @@ def display_tags(ax, l, tags):
         x = (min(xs) + max(xs)) / 2
         y = (min(ys) + max(ys)) / 2
 
-        label = f'{id}@{deg}°' if id is not None else f'{deg}°'
-
         ax.text(
             x, y,
-            label,
+            str(id),
             ha='center',
             va='center',
             c='red',
